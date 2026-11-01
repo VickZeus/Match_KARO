@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="assets/banner.svg" alt="MatchKARO" width="640">
+  <img src="banner.gif" alt="MatchKARO" width="640">
 </h1>
 
 <p align="center"><b>Find people with the same vibe.</b></p>
@@ -153,8 +153,6 @@ Code lives in [`ml/`](./ml) and runs as `python -m ml.train`.
 match_me/
 ├── .github/workflows/
 │   └── train-model.yml        # ML training every 6 hours
-├── assets/
-│   └── banner.svg             # pixel-art MatchKARO logo
 ├── ml/
 │   ├── fetch_data.py          # read scores from Supabase
 │   ├── preprocessing.py       # user x quiz feature matrix
@@ -176,6 +174,7 @@ match_me/
 │   │   ├── redis.js           # Upstash Redis client
 │   │   └── getUser.js         # reads and verifies the JWT cookie
 │   └── styles/
+├── banner.gif                 # animated pixel-art logo
 ├── requirements.txt           # Python dependencies for ml/
 ├── vercel.json                # cron schedule
 └── package.json
@@ -193,5 +192,4 @@ match_me/
 ---
 
 ## Author
-
 **Abhishek Singh**, [@VickZeus](https://github.com/VickZeus)
