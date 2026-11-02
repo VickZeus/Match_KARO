@@ -5,10 +5,6 @@ import bcrypt from "bcryptjs"
 import { NextResponse } from "next/server";
 
 
-
-// Logs in the user and 
-// generate an auth token
-
 export async function POST(req){
     const{username,password}=await req.json();
 

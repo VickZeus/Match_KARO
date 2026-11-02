@@ -167,9 +167,7 @@ function UserScores() {
                 )}
 
                 {scores?.length === 0 && (
-                    <p className="pix text-center text-gray-400 text-md mt-4">
-                        No scores yet. Take a quiz!
-                    </p>
+                    <p className="pix text-center text-gray-400 text-[10px] p-1">No scores yet. Take a quiz!</p>
                 )}
 
                 {scores?.map((s) => {
@@ -204,16 +202,86 @@ function UserScores() {
     );
 }
 
-function FindPeople(){
-    return (
-        <div className="p-3 rounded-lg ">
-            <div className="pix mb-2 text-[12px]">Find People</div>
-            <div className="flex flex-wrap gap-2 border bg-black/80 border-amber-50 justify-center w-full h-60 bg-black-200 overflow-y-auto rounded rounded-lg ">
-            </div> 
-        </div>
-    )
-}
 
+function FindPeople() {
+    const [people, setPeople] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
+
+    useEffect(() => {
+        async function fetchPeople() {
+            try {
+                const res = await fetch("/api/findPeople");
+                const data = await res.json();
+
+                if (!res.ok) {
+                    setPeople([]);
+                    return;
+                }
+
+                setPeople(data.people);
+            } catch (error) {
+                setPeople([]);
+                console.error("Error fetching people:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchPeople();
+    }, []);
+
+    // Filter usernames based on search input
+    const filteredPeople = people.filter((person) =>
+        person.username.toLowerCase().includes(search.toLowerCase())
+    );
+
+    return (
+        <div className="p-3 rounded-lg">
+
+            <div className="pix mb-2 text-[12px]">
+                Find People
+            </div>
+
+            <div className="flex flex-col gap-2 border border-amber-50 justify-center w-full h-fit bg-black/80 overflow-y-auto rounded-lg p-2">
+
+                <input
+                    type="text"
+                    placeholder="Search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="text-white bg-blue-200/20 border border-amber-50/30 rounded-lg p-1 outline-none text-sm"
+                />
+
+                {loading ? (
+                    <div className="text-white/50 text-sm">
+                        Finding people...
+                    </div>
+                ) : filteredPeople.length === 0 ? (
+                    <div className="pix text-center text-white/50 text-[10px]">
+                        {search
+                            ? "No matching users found."
+                            : "No people found in your cluster."}
+                    </div>
+                ) : (
+                    <div className="bg-gray-900 flex flex-col gap-2 max-h-40 min-h-20  overflow-y-auto p-2 rounded-lg">
+
+                        {filteredPeople.map((person) => (
+                            <div
+                                key={person.username}
+                                className="h-fit w-full py-1 px-3 rounded-lg border border-blue-950 bg-black/90 text-blue-300 text-[8px] pix"
+                            >
+                                <div>{person.username}</div>
+                            </div>
+                        ))}
+
+                    </div>
+                )}
+
+            </div>
+        </div>
+    );
+}
 
 export default function HomePage(){
     return(
