@@ -157,7 +157,12 @@ def save_results(features, result):
         "best_k": result["best_k"],
         "silhouette_score": float(result["silhouette_score"]),
         "total_users": len(features),
-        "status": "running"
+        "status": "running",
+        "quiz_order": list(features.columns),
+        "medians": [float(v) for v in features.median()],
+        "scaler_mean": result["scaler"].mean_.tolist(),
+        "scaler_scale": result["scaler"].scale_.tolist(),
+        "centroids_scaled": result["model"].cluster_centers_.tolist(),
     }
 
     run_response = (

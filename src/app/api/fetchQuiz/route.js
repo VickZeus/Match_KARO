@@ -3,6 +3,7 @@ import clientPromise from "@/lib/mongodb";
 import { getUser } from "@/lib/getUser";
 import { supabase } from "@/lib/supabase";
 import { redis } from "@/lib/redis";
+import { assignCluster } from "@/lib/assignCluster";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +59,13 @@ export async function POST(req) {
             console.log(error);
             return NextResponse.json({ error: "Failed to save score" }, { status: 500 });
         }
+
+        try {
+            await assignCluster(user.username);
+        } catch (e) {
+            console.log("assignCluster failed", e);
+        }
+
 
         // Clear cached scores so the scores panel shows the new result
         try {

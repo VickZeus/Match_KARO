@@ -218,7 +218,6 @@ function FindPeople() {
                     setPeople([]);
                     return;
                 }
-
                 setPeople(data.people);
             } catch (error) {
                 setPeople([]);
@@ -261,7 +260,8 @@ function FindPeople() {
                     <div className="pix text-center text-white/50 text-[10px]">
                         {search
                             ? "No matching users found."
-                            : "No people found in your cluster."}
+                            : "No users found in your cluster."}
+                            
                     </div>
                 ) : (
                     <div className="bg-gray-900 flex flex-col gap-2 max-h-40 min-h-20  overflow-y-auto p-2 rounded-lg">
