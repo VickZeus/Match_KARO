@@ -8,8 +8,8 @@ export async function getUser() {
     if (!token) return null;
 
     try {
-        const payload =jwt.verify(token,process.env.JWT_SECRET);
-        return { id: payload.userId, username: payload.username };
+        const payload = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ["HS256"] });
+        return { username: payload.username, autho: payload.autho };
     } catch {
         return null;
     }

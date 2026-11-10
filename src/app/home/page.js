@@ -2,6 +2,9 @@
 import {useRouter} from "next/navigation"
 import {useState,useEffect} from "react"
 import {GRIDR} from "@/app/page"
+import NoAuthHP from "@/components/NoAuthUI" 
+import Link from "next/link"
+import Footer from "@/components/Footer"
 
 
 function TopSection(){
@@ -283,13 +286,52 @@ function FindPeople() {
     );
 }
 
-export default function HomePage(){
+
+
+function AuthHome(){
     return(
-        <div className="p-2 flex flex-col justify-center gap-3">
-            <TopSection/>
-            <MiddleSection/>
-            <UserScores/>
-            <FindPeople/>            
+        <div>
+            <div className="p-2 flex flex-col justify-center gap-2">
+                <TopSection/>
+                <MiddleSection/>
+                <UserScores/>
+                <FindPeople/>           
+            </div>
+            <Footer/> 
         </div>
     )
 }
+
+
+
+function NoAuthHome(){
+    return(
+        <div>
+            <TopSection/>
+            <NoAuthHP/>
+            <Footer/> 
+        </div>
+    )
+}
+
+export default function HomePage(){
+    const [authStat,setAuthStat]=useState(false);
+
+    useEffect(()=>{ 
+        async function authStatus(){ 
+            try{
+                const res=await fetch("/api/auth/cook_status")
+                setAuthStat(res.ok);
+            }
+            catch{
+                setAuthStat(false);
+            }
+        }
+        authStatus();
+    },[])
+    return(
+        authStat?<AuthHome/>:<NoAuthHome/> 
+    )
+}
+
+
