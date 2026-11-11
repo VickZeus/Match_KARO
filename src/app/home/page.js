@@ -2,9 +2,11 @@
 import {useRouter} from "next/navigation"
 import {useState,useEffect} from "react"
 import {GRIDR} from "@/app/page"
+import {Loading} from "@/components/accessories"
 import NoAuthHP from "@/components/NoAuthUI" 
 import Link from "next/link"
 import Footer from "@/components/Footer"
+import Profile from "@/components/Profile"
 
 
 function TopSection(){
@@ -27,15 +29,16 @@ function TopSection(){
         .catch(()=>setStatus(false))
     })
     return (
-        <div className="pix flex justify-between mt-2 ml-2"> 
+        <div className="pix flex gap-1 justify-start mt-2 ml-2"> 
             MatchKARO
             <GRIDR/>
-            {
+            <div className="self-end ml-auto">{
                 (status)? 
-                <button className="rounded rounded-sm bg-purple-500 text-white p-1 text-[12px]" onClick={()=>router.push("/profile")}>Profile</button> :
-                <button className="rounded rounded-sm bg-amber-50 text-black p-1 text-[12px]" onClick={()=>router.push("/loginPage")}>Login</button>
+                (<Profile onLogout={handleLogOut}/>)
+                :
+                (<button className="rounded rounded-sm bg-amber-50 text-black p-1 text-[12px]" onClick={()=>router.push("/loginPage")}>Login</button>)
             }
-            <button className="rounded rounded-sm bg-red-500 text-white p-1 text-[12px]"  onClick={handleLogOut}>Log Out</button>
+            </div>
         </div>
     )
 }
@@ -86,7 +89,7 @@ function MiddleSection() {
                 />
 
                 <div className={`flex-1 min-h-0 ${chosen==="default"?"overflow-y-auto":"overflow-hidden"}`}>
-                    {loading && <div className="text-center">Loading...</div>}
+                    {loading && <div className="text-center"><Loading/></div>}
                     {mess && <div className="text-center text-red-400">{mess}</div>}
                     {!loading && !mess && filtered.length === 0 && (
                         <div className="text-center">No quizzes found.</div>

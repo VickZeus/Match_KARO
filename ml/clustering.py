@@ -1,3 +1,4 @@
+import time
 
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -21,6 +22,7 @@ def train_kmeans(features):
     best_model = None
     best_k = None
     best_score = -1
+    k_results = {}
 
     # Test different cluster counts
     for k in range(2, max_k + 1):
@@ -31,13 +33,22 @@ def train_kmeans(features):
             n_init=20
         )
 
+        started = time.time()
         labels = model.fit_predict(scaled_data)
+        fit_seconds = time.time() - started
 
         # Ignore invalid clustering results
         if len(set(labels)) < 2:
             continue
 
         score = silhouette_score(scaled_data, labels)
+
+        k_results[k] = {
+            "silhouette": float(score),
+            "inertia": float(model.inertia_),
+            "iterations": int(model.n_iter_),
+            "fit_seconds": round(fit_seconds, 2),
+        }
 
         print(f"K = {k} | Silhouette Score = {score:.4f}")
 
@@ -63,5 +74,6 @@ def train_kmeans(features):
         "labels": best_model.labels_,
         "best_k": best_k,
         "silhouette_score": best_score,
-        "centroids": centroids
+        "centroids": centroids,
+        "k_results": k_results
     }

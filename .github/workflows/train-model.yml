@@ -1,4 +1,3 @@
-
 name: MatchKARO ML Training
 
 on:
@@ -64,8 +63,10 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           TRAINING_OUTCOME: ${{ steps.training.outcome }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
         run: python -m ml.send_email ended
 
       - name: Mark workflow failed if training failed
         if: steps.training.outcome == 'failure'
-        run: exit 1
+        run: exit 1:

@@ -1,4 +1,6 @@
-
+import json
+import time
+import traceback
 from datetime import datetime, timezone
 from io import BytesIO
 
@@ -17,6 +19,7 @@ from ml.clustering import train_kmeans
 
 
 BUCKET_NAME = "K_Means_Cluster_Plots"
+SUMMARY_FILE = "ml_summary.json"
 
 
 def generate_cluster_plot(features, result):
@@ -222,24 +225,60 @@ def save_results(features, result):
 
 
 def main():
+    started = time.time()
+    summary = {"status": "failed", "stage": "starting", "timings": {}}
+
     try:
+        t = time.time()
+        summary["stage"] = "fetching data"
         print("Fetching data...")
         records = fetch_scores()
+        summary["records_fetched"] = len(records)
+        summary["timings"]["fetch"] = round(time.time() - t, 1)
 
+        t = time.time()
+        summary["stage"] = "preprocessing"
         print("\nPreprocessing data...")
         features = preprocess_data(records)
+        summary["timings"]["preprocess"] = round(time.time() - t, 1)
 
+        t = time.time()
+        summary["stage"] = "training"
         print("\nTraining K-Means...")
         result = train_kmeans(features)
 
+        params = result["model"].get_params()
+        summary["best_k"] = int(result["best_k"])
+        summary["k_results"] = result.get("k_results", {})
+        summary["train_params"] = {
+            "n_init": params["n_init"],
+            "max_iter": params["max_iter"],
+            "random_state": params["random_state"],
+        }
+        summary["best_iterations"] = int(result["model"].n_iter_)
+        summary["converged"] = bool(result["model"].n_iter_ < params["max_iter"])
+        summary["timings"]["train"] = round(time.time() - t, 1)
+
+        t = time.time()
+        summary["stage"] = "saving results"
         print("\nSaving results to Supabase...")
         save_results(features, result)
+        summary["timings"]["save"] = round(time.time() - t, 1)
 
+        summary["status"] = "success"
+        summary["stage"] = "done"
         print("\nML pipeline completed successfully!")
 
     except Exception as error:
+        summary["error"] = f"{type(error).__name__}: {error}"
+        summary["traceback"] = traceback.format_exc()[-1500:]
         print("\nPipeline failed:", error)
         raise
+
+    finally:
+        summary["duration_seconds"] = round(time.time() - started, 1)
+        with open(SUMMARY_FILE, "w") as f:
+            json.dump(summary, f, indent=2)
 
 
 if __name__ == "__main__":
