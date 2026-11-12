@@ -10,8 +10,8 @@ export default function Profile({ onEdit, onLogout }) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
-        <button className="rounded-full bg-purple-500 w-[30px] h-[30px] text-white text-[12px] outline-none">
-          P
+        <button className="rounded-full bg-white w-[30px] h-[30px] text-white text-[12px] outline-none">
+          <img src="/default_pfp.png" alt="Profile" className="w-full h-full rounded-full object-cover border border-1" />
         </button>
       </DropdownMenu.Trigger>
 

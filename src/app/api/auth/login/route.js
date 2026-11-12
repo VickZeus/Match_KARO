@@ -3,6 +3,8 @@ import {cookies} from "next/headers"
 import { supabase } from "@/lib/supabase"
 import bcrypt from "bcryptjs"
 import { NextResponse } from "next/server";
+import { getUser } from "@/lib/getUser"
+import { redis } from "@/lib/redis"
 
 
 export async function POST(req){
@@ -38,3 +40,32 @@ export async function POST(req){
 }
 
 
+export async function GET(){
+    const user = await getUser();
+    if(!user){
+        return NextResponse.json({message:"Not logged in"}, {status:401})
+    }
+    const {data:userData, error:userError} = await supabase
+        .from("login_pass_table")
+        .select("username, created_at, autho, email")
+        .eq("username", user.username)
+        .single()
+    const {data:clusterData, error:clusterError} = await supabase
+        .from("user_clusters")
+        .select("cluster_id, model_run_id, updated_at")
+        .eq("username", user.username)
+        .maybeSingle()
+
+    if(userError || clusterError){
+        console.log(userError?.message || clusterError?.message)
+        return NextResponse.json({message:"User not found"}, {status:404})
+    }
+    const data = {...userData, ...clusterData}
+    try{
+        await redis.set(`user:${user.username}`, data, {ex:3600})
+    }catch(e){
+        console.log("Redis write failed", e)
+        return NextResponse.json({cached:false}, {status:200})
+    }
+    return NextResponse.json({cached:true}, {status:200})
+}

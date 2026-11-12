@@ -26,8 +26,8 @@ export function RegisterPage({setFlag,flag}){
     setMessage(data.message);
 
     if (res.ok) {
-        router.replace("/home"); 
-        router.refresh();
+      setMessage("Registered Successfully, Please Login")
+      setFlag(true)
     }
     else{
       setMessage(err)
@@ -69,7 +69,6 @@ export function LoginPage({setFlag,flag}) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-
   const router=useRouter();
 
   async function handleSubmit(e) {
@@ -85,8 +84,14 @@ export function LoginPage({setFlag,flag}) {
     setMessage(data.message);
 
     if (res.ok) {
-        router.replace("/home");
-        router.refresh();
+      try{
+          const r = await fetch("/api/auth/login");
+          if(!r.ok) console.error("User cache failed:", r.status);
+      }catch (err){
+          console.error("Failed To Fetch User Data",err);
+      }
+      router.replace("/home");
+      router.refresh();
     }
   }
 return (

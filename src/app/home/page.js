@@ -140,15 +140,6 @@ function MiddleSection() {
     )
 }
 
-    
-function LowerSection(){
-    return (
-        <div className="flex flex-col justify-around">
-
-        </div>
-    )
-}
-
 function UserScores() {
     const [scores, setScores] = useState(null); // null = loading
 
@@ -213,6 +204,9 @@ function FindPeople() {
     const [people, setPeople] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [cluster,setCluster]=useState("Not Assigned")
+
+
 
     useEffect(() => {
         async function fetchPeople() {
@@ -222,9 +216,11 @@ function FindPeople() {
 
                 if (!res.ok) {
                     setPeople([]);
+                    setCluster("Not Assigned")
                     return;
                 }
                 setPeople(data.people);
+                setCluster(data.cluster_id);
             } catch (error) {
                 setPeople([]);
                 console.error("Error fetching people:", error);
@@ -235,21 +231,19 @@ function FindPeople() {
 
         fetchPeople();
     }, []);
-
     // Filter usernames based on search input
     const filteredPeople = people.filter((person) =>
         person.username.toLowerCase().includes(search.toLowerCase())
     );
-
     return (
         <div className="p-3 rounded-lg">
-
-            <div className="pix mb-2 text-[12px]">
-                Find People
+            <div className="flex items-baseline justify-between pix mb-2 text-[12px]">
+                <div>Find People</div>
+                <div className="text-center text-[8px] bg-purple-900 p-1 rounded">
+                    Current Cluster :{cluster}
+                </div>
             </div>
-
             <div className="flex flex-col gap-2 border border-amber-50 justify-center w-full h-fit bg-black/80 overflow-y-auto rounded-lg p-2">
-
                 <input
                     type="text"
                     placeholder="Search"
@@ -257,11 +251,8 @@ function FindPeople() {
                     onChange={(e) => setSearch(e.target.value)}
                     className="text-white bg-blue-200/20 border border-amber-50/30 rounded-lg p-1 outline-none text-sm"
                 />
-
                 {loading ? (
-                    <div className="text-white/50 text-sm">
-                        Finding people...
-                    </div>
+                    <Loading/>
                 ) : filteredPeople.length === 0 ? (
                     <div className="pix text-center text-white/50 text-[10px]">
                         {search

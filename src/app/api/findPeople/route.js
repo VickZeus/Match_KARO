@@ -44,7 +44,7 @@ export async function GET() {
         return NextResponse.json({
             cluster_id: myCluster.cluster_id,
             people: people || []
-        });
+        },{status:200});
 
     } catch (error) {
         console.error("FindPeople API:", error);
